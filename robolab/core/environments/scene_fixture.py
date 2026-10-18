@@ -31,7 +31,13 @@ import isaaclab.sim as sim_utils
 from isaaclab.assets import AssetBaseCfg
 from isaaclab.sim.utils import clone
 from isaaclab.utils import configclass
-from isaacsim.core.utils.stage import get_current_stage
+try:
+    from isaacsim.core.utils.stage import get_current_stage
+except ImportError:  # IsaacSim 6.x removed isaacsim.core.utils.stage
+    import omni.usd
+
+    def get_current_stage():
+        return omni.usd.get_context().get_stage()
 from pxr import Usd, UsdGeom
 
 from robolab.constants import ASSET_DIR

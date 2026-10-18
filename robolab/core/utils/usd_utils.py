@@ -400,13 +400,19 @@ def get_prim_at_path(prim_path: str) -> Usd.Prim:  # noqa: N802 – keep API unc
     """
 
     if stage_utils is None:
-        raise ImportError(
-            "get_prim_at_path requires Isaac-Sim; start it with AppLauncher or "
-            "ensure isaacsim python paths are on PYTHONPATH before calling this "
-            "function."
-        )
-
-    stage = stage_utils.get_current_stage()
+        # IsaacSim 6.x removed isaacsim.core.utils.stage. When Kit is running
+        # (AppLauncher booted), omni.usd provides the same stage handle.
+        try:
+            import omni.usd
+        except ImportError:
+            raise ImportError(
+                "get_prim_at_path requires Isaac-Sim; start it with AppLauncher or "
+                "ensure isaacsim python paths are on PYTHONPATH before calling this "
+                "function."
+            )
+        stage = omni.usd.get_context().get_stage()
+    else:
+        stage = stage_utils.get_current_stage()
     prim = stage.GetPrimAtPath(prim_path)
 
     if not prim.IsValid():

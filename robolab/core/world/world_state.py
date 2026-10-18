@@ -32,14 +32,23 @@ except ImportError:
 from isaaclab.envs import ManagerBasedRLEnv
 from isaaclab.sensors.frame_transformer.frame_transformer import FrameTransformer
 from isaaclab.utils.math import transform_points
-from isaacsim.core.prims import XFormPrim
 from pxr import Gf, Usd, UsdGeom
+
+try:
+    # IsaacSim 5.x — old-style scene extras are isaacsim.core.prims.XFormPrim
+    from isaacsim.core.prims import XFormPrim
+except ImportError:
+    # IsaacSim 6.x removed isaacsim.core.prims; scene extras are
+    # isaaclab.sim.views.XformPrimView only.
+    XFormPrim = None
 
 try:
     # IsaacLab 2.3 / IsaacSim 5.1 — scene extras are isaaclab.sim.views.XformPrimView
     from isaaclab.sim.views import XformPrimView
 
-    XFORM_PRIM_TYPES: tuple[type, ...] = (XFormPrim, XformPrimView)
+    XFORM_PRIM_TYPES: tuple[type, ...] = (
+        (XFormPrim, XformPrimView) if XFormPrim is not None else (XformPrimView,)
+    )
 
     def _get_scales_usd_float3_safe(self, indices=None) -> torch.Tensor:
         """Replacement for XformPrimView._get_scales_usd (IsaacLab 2.3.2.post1).
