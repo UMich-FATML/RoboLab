@@ -7,6 +7,11 @@
 Boots Isaac Sim once at conftest load so test files can freely import
 isaaclab/robolab modules at their top level. Auto-accepts the Omniverse
 EULA so a fresh install works headless without any prompts.
+
+Set ``ROBOLAB_TEST_DISABLE_CAMERAS=1`` to boot without cameras: on clusters
+whose GPU driver cannot run the RTX renderer (IsaacSim 5.x needs an R580
+driver; R590 segfaults in librtx.scenedb), this still runs every unit test,
+while the two env-constructing tests skip (their scenes contain cameras).
 """
 
 import os
@@ -14,6 +19,9 @@ import os
 # Accept the Omniverse EULA non-interactively. Must be set before any
 # isaaclab import. setdefault → user can still override.
 os.environ.setdefault("OMNI_KIT_ACCEPT_EULA", "Y")
+
+# Read before the app is launched; tests import the same constant for skips.
+CAMERAS_DISABLED = os.environ.get("ROBOLAB_TEST_DISABLE_CAMERAS", "0") == "1"
 
 import cv2  # noqa: E402, F401  must be imported before isaaclab
 
@@ -24,7 +32,7 @@ from isaaclab.app import AppLauncher  # noqa: E402
 # Isaac Sim's [Info] startup/shutdown chatter.
 _launcher = AppLauncher(
     headless=True,
-    enable_cameras=True,
+    enable_cameras=not CAMERAS_DISABLED,
     carb_settings={
         "/log/level": "warn",
         "/log/outputStreamLevel": "warn",

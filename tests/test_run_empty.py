@@ -10,6 +10,7 @@ verify a different task or robot setup.
 
 import torch
 
+from tests.conftest import CAMERAS_DISABLED
 from robolab.core.environments.factory import get_envs
 from robolab.core.environments.runtime import create_env, end_episode
 from robolab.registrations.droid.auto_env_registrations_jointpos import auto_register_droid_envs
@@ -25,9 +26,9 @@ def _resolve_env_name(task_arg, env_name_arg):
 
 
 def test_run_empty_episode(task_arg, env_name_arg):
-    if not torch.cuda.is_available():
+    if not torch.cuda.is_available() or CAMERAS_DISABLED:
         import pytest
-        pytest.skip("CUDA device required for run_empty episode")
+        pytest.skip("CUDA device + cameras required for run_empty episode")
 
     env_name = _resolve_env_name(task_arg, env_name_arg)
 

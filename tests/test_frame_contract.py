@@ -22,6 +22,8 @@ import torch
 from isaaclab.utils.math import combine_frame_transforms, subtract_frame_transforms
 
 from robolab.core.logging.frame_compat import demo_robot_root_pose
+from robolab.core.utils.isaaclab_compat import quat_from_wxyz, quat_to_wxyz
+from tests.conftest import CAMERAS_DISABLED
 
 
 def test_frame_compat_fallback(tmp_path):
@@ -60,25 +62,34 @@ def test_ee_frame_math_with_offset_root():
     Synthetic stand-in for a floor-standing embodiment: root translated and
     yawed 90 deg. subtract_frame_transforms must recover the local EE pose,
     and composing with the root pose must round-trip to the world pose.
+
+    All literals are authored in RoboLab's (w, x, y, z) contract
+    (docs/frames.md) and converted to/from the installed isaaclab's runtime
+    convention — the same boundary conversion the observations and recorders
+    use (robolab.core.utils.isaaclab_compat), so this pins both together.
     """
     sqrt2_2 = float(np.sqrt(2.0) / 2.0)
     root_pos = torch.tensor([[1.0, 2.0, -0.7]])
     root_quat = torch.tensor([[sqrt2_2, 0.0, 0.0, sqrt2_2]])  # (w, x, y, z), yaw +90 deg
     ee_local_pos = torch.tensor([[0.5, 0.0, 0.3]])
-    ee_local_quat = torch.tensor([[1.0, 0.0, 0.0, 0.0]])
+    ee_local_quat = torch.tensor([[1.0, 0.0, 0.0, 0.0]])  # (w, x, y, z) identity
 
     # World EE pose, built independently: yaw+90 maps (x, y) -> (-y, x).
     ee_world_pos = torch.tensor([[1.0, 2.5, -0.4]])
     ee_world_quat = root_quat.clone()
 
-    pos, quat = subtract_frame_transforms(root_pos, root_quat, ee_world_pos, ee_world_quat)
+    pos, quat = subtract_frame_transforms(
+        root_pos, quat_from_wxyz(root_quat), ee_world_pos, quat_from_wxyz(ee_world_quat)
+    )
     torch.testing.assert_close(pos, ee_local_pos, atol=1e-6, rtol=0.0)
-    torch.testing.assert_close(quat, ee_local_quat, atol=1e-6, rtol=0.0)
+    torch.testing.assert_close(quat_to_wxyz(quat), ee_local_quat, atol=1e-6, rtol=0.0)
 
     # Round trip: robot-root EE + recorded root pose -> world again.
-    back_pos, back_quat = combine_frame_transforms(root_pos, root_quat, pos, quat)
+    back_pos, back_quat = combine_frame_transforms(
+        root_pos, quat_from_wxyz(root_quat), pos, quat
+    )
     torch.testing.assert_close(back_pos, ee_world_pos, atol=1e-6, rtol=0.0)
-    torch.testing.assert_close(back_quat, ee_world_quat, atol=1e-6, rtol=0.0)
+    torch.testing.assert_close(quat_to_wxyz(back_quat), ee_world_quat, atol=1e-6, rtol=0.0)
 
 
 def test_recorded_episode_frame_contract():
@@ -88,9 +99,9 @@ def test_recorded_episode_frame_contract():
     end_episode never writes an HDF5, so without arming this test would pass
     vacuously on nothing).
     """
-    if not torch.cuda.is_available():
+    if not torch.cuda.is_available() or CAMERAS_DISABLED:
         import pytest
-        pytest.skip("CUDA device required for a recorded episode")
+        pytest.skip("CUDA device + cameras required for a recorded episode")
 
     from robolab.core.environments.factory import get_envs
     from robolab.core.environments.runtime import create_env, end_episode
@@ -116,7 +127,9 @@ def test_recorded_episode_frame_contract():
             expected_ee_pos.append(
                 (robot.data.body_pos_w[:, body_idx, :] - env.scene.env_origins[:, 0:3]).cpu().numpy()[0]
             )
-            expected_ee_quat.append(robot.data.body_quat_w[:, body_idx, :].cpu().numpy()[0])
+            # The recorded orientation channel is (w, x, y, z) (docs/frames.md);
+            # the runtime tensor speaks the installed stack's convention.
+            expected_ee_quat.append(quat_to_wxyz(robot.data.body_quat_w[:, body_idx, :]).cpu().numpy()[0])
         export_dir = env.recorder_manager.cfg.dataset_export_dir_path
         end_episode(env)
     finally:

@@ -1,11 +1,26 @@
 # SPDX-FileCopyrightText: Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-"""Unit tests for policy-proxy interoperability metadata."""
+"""Unit tests for policy-proxy interoperability metadata.
+
+Requires ``openpi-client`` (``policies.volo.client`` imports
+``policies.pi0_family.client``, which imports it at module level). The package
+is deliberately NOT a RoboLab dependency: its published metadata pins
+``numpy<2``, which cannot co-resolve with isaaclab 3.0's ``numpy>=2``, and the
+Docker eval image installs it separately (``--no-deps``, from the pinned
+xuningy/openpi commit). Where it is absent this module skips rather than
+erroring at collection; install it manually to run these tests.
+"""
 
 from __future__ import annotations
 
 import numpy as np
+import pytest
+
+pytest.importorskip(
+    "openpi_client",
+    reason="openpi-client not installed (pip install openpi-client, or use the Docker eval image)",
+)
 
 from policies.volo.client import VoloCosmos3Client
 from policies.volo.metadata import OrchestratorMetadataMixin
