@@ -23,7 +23,7 @@ from isaaclab.utils.math import quat_apply, quat_apply_inverse
 
 import robolab.constants
 from robolab.constants import DEBUG
-from robolab.core.task.hull_check import build_local_hull, point_in_hull
+from robolab.core.task.hull_check import build_local_hull, point_in_hull, read_prim_mesh_points
 from robolab.core.utils.geometry_utils import spatial_condition_check_vector_based
 from robolab.core.utils.isaaclab_compat import quat_from_wxyz
 from robolab.core.utils.transform_utils import transform_pose_from_w_to_b_vectorized
@@ -258,36 +258,15 @@ def _read_local_mesh_points(world, body_name: str) -> np.ndarray:
     with hull dimensions 100x larger than world coordinates, breaking
     point-in-hull tests against world-frame poses.
     """
-    from pxr import Gf, Usd, UsdGeom
-
+    # Instanceable SimReady assets keep geometry in an instanced prototype;
+    # read_prim_mesh_points traverses proxies so containment hulls work for
+    # bowls, baskets, and crates. Shared with robolab.scene_gen.geometry so the
+    # generator and the runtime agree on what an object's geometry is.
     prim = world._get_prim(body_name, env_id=0)
-    xform_cache = UsdGeom.XformCache(Usd.TimeCode.Default())
-    prim_xform = xform_cache.GetLocalToWorldTransform(prim)
-    # Build a no-scale-no-shear world-to-prim that preserves world's meter units.
-    prim_xform_no_scale = prim_xform.RemoveScaleShear()
-    prim_world_to_local = prim_xform_no_scale.GetInverse()
-
-    all_points: list[list[float]] = []
-    # Instanceable SimReady assets keep geometry in an instanced prototype.
-    # Traverse proxies so containment hulls work for bowls, baskets, and crates.
-    for child in Usd.PrimRange(prim, Usd.TraverseInstanceProxies()):
-        if not child.IsA(UsdGeom.Mesh):
-            continue
-        mesh = UsdGeom.Mesh(child)
-        purpose = mesh.GetPurposeAttr().Get()
-        if purpose not in (None, UsdGeom.Tokens.default_):
-            continue
-        points = mesh.GetPointsAttr().Get()
-        if points is None or len(points) == 0:
-            continue
-        mesh_to_world = xform_cache.GetLocalToWorldTransform(child)
-        for p in points:
-            p_world = mesh_to_world.Transform(p)        # true world meters
-            p_local = prim_world_to_local.Transform(Gf.Vec3d(p_world))  # rotated to prim frame, meters preserved
-            all_points.append([p_local[0], p_local[1], p_local[2]])
-    if not all_points:
-        raise ValueError(f"_read_local_mesh_points: no mesh geometry found under prim '{body_name}'")
-    return np.asarray(all_points, dtype=np.float64)
+    try:
+        return read_prim_mesh_points(prim)
+    except ValueError:
+        raise ValueError(f"_read_local_mesh_points: no mesh geometry found under prim '{body_name}'") from None
 
 
 def _untransformed_aabb(world, body_name: str):

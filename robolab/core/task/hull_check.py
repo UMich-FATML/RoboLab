@@ -108,3 +108,46 @@ def open_top_planes(planes: torch.Tensor, axis: int = 2, threshold: float = 0.7)
     """
     keep = planes[:, axis] < threshold
     return planes[keep]
+
+
+def read_prim_mesh_points(prim) -> np.ndarray:
+    """Concatenated mesh points under ``prim``, in the prim's rotated frame at world scale.
+
+    Pure pxr (no IsaacSim): reads ``points`` from descendant ``UsdGeom.Mesh``
+    prims (traversing instance proxies, default purpose only), composes each
+    mesh's local-to-world transform, then undoes only the prim's rotation and
+    translation — explicitly NOT its scale — so points stay in meters even for
+    assets authored in other units.
+
+    This is the single definition of "an object's geometry" shared by the
+    runtime predicates (``predicate_logic._read_local_mesh_points``) and the
+    offline scene generator (``robolab.scene_gen.geometry``).
+
+    Raises:
+        ValueError: if no mesh geometry exists under ``prim``.
+    """
+    from pxr import Gf, Usd, UsdGeom
+
+    xform_cache = UsdGeom.XformCache(Usd.TimeCode.Default())
+    prim_xform = xform_cache.GetLocalToWorldTransform(prim)
+    prim_world_to_local = prim_xform.RemoveScaleShear().GetInverse()
+
+    chunks: list[np.ndarray] = []
+    for child in Usd.PrimRange(prim, Usd.TraverseInstanceProxies()):
+        if not child.IsA(UsdGeom.Mesh):
+            continue
+        mesh = UsdGeom.Mesh(child)
+        purpose = mesh.GetPurposeAttr().Get()
+        if purpose not in (None, UsdGeom.Tokens.default_):
+            continue
+        points = mesh.GetPointsAttr().Get()
+        if points is None or len(points) == 0:
+            continue
+        mesh_to_prim = xform_cache.GetLocalToWorldTransform(child) * prim_world_to_local
+        m = np.array(mesh_to_prim, dtype=np.float64)  # row-vector convention: p' = [p,1] @ m
+        pts = np.asarray(points, dtype=np.float64)
+        homo = np.concatenate([pts, np.ones((len(pts), 1))], axis=1) @ m
+        chunks.append(homo[:, :3] / homo[:, 3:4])
+    if not chunks:
+        raise ValueError(f"read_prim_mesh_points: no mesh geometry found under prim '{prim.GetPath()}'")
+    return np.concatenate(chunks, axis=0)
