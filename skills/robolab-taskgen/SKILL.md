@@ -15,6 +15,10 @@ metadata:
 
 # Task Generation
 
+> **Many tasks?** `scripts/scenegen.py` generates scenes with tasks in bulk; goal
+> facts are proven solvable and rendered into both the termination and the
+> instructions — see `docs/scene_gen_pipeline.md`.
+
 Generate complete RoboLab task files from natural language descriptions.
 
 A **task** is a Python file containing a `Task` dataclass that binds a USD scene to a language instruction and termination criteria. Tasks are agnostic to the robot, observation space, and action space.

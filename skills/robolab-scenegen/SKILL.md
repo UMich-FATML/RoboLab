@@ -14,6 +14,12 @@ metadata:
 
 # Scene Generation
 
+> **Many scenes?** For batch generation (scenes *and* tasks, no LLM per scene) use
+> `scripts/scenegen.py` — see `docs/scene_gen_pipeline.md`. Its mesh-grounded rest
+> heights also show the caveat for Step 2 below: `z = dims[2] / 2` is only right for
+> center-origin assets; bottom-origin assets (e.g. `wooden_bowl`, VoMP bins) rest at
+> `z ≈ 0`, and settle has to correct the difference.
+
 Generate USD scene files (`.usda`) from natural language descriptions of tabletop arrangements.
 
 A **scene** is a USDA file that places objects on the table in `base_empty.usda`. Scenes are robot-agnostic — they define only what objects exist and where they are positioned.

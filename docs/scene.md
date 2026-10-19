@@ -50,7 +50,7 @@ It is recommended that you re-open the scenes and check that all the objects you
 
 ## AI Workflows: Scene Generation
 
-We provide a Claude Code agent skill that you can use to generate scene files from natural language descriptions using the `/robolab-scenegen` skill. Describe the objects and arrangement you want, and the agent will produce a complete, valid USDA scene file, run physics settling, and generate a screenshot. See [`skills/robolab-scenegen/`](../skills/robolab-scenegen/) for details.
+We provide a Claude Code agent skill that you can use to generate scene files from natural language descriptions using the `/robolab-scenegen` skill. Describe the objects and arrangement you want, and the agent will produce a complete, valid USDA scene file, run physics settling, and generate a screenshot. See [`skills/robolab-scenegen/`](../skills/robolab-scenegen/) for details. For many scenes at once — with tasks — use the [batch pipeline](scene_gen_pipeline.md).
 
 ## To use the scenes in tasks
 

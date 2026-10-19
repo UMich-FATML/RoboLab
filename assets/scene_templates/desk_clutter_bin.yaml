@@ -1,0 +1,7 @@
+name: desk_clutter_bin
+theme: desk items and a bin to tidy into
+slots:
+  - {slot: bin, select: {category: bin}, require: {container: true}, count: [1, 1], placement: table, region: any}
+  - {slot: desk, select: {category: [electronics, stationery, accessory, tool, toy]}, require: {graspable: true}, count: [2, 4], placement: table, region: any, pose: any}
+  - {slot: in_bin, select: {category: [stationery, toy, electronics]}, require: {graspable: true}, count: [0, 1], placement: "in:bin"}
+goals: [put_in, take_out, spatial, count_k_of_n]

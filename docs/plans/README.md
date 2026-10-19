@@ -14,7 +14,7 @@ it. Simple changes don't need one — the commit body is enough.
 
 ## Active plans
 
-(none)
+- [2026-10 — Batch scene/task generation pipeline](2026-10-scene-gen-pipeline.md)
 
 ## Completed plans
 
@@ -43,6 +43,10 @@ it.
    cluster actually runs is not reviewable in-repo. If a second person starts
    running the suite on a different cluster, consider committing a
    cluster-generic template (without site names) here.
-5. **`openpi-client` upstream pins `numpy<2`.** If upstream un-pins it, it can
+5. **Generated tasks are only logically solvable.** `scripts/scenegen.py` proves
+   plans symbolically; nobody executes them. Before using generated tasks for
+   benchmark claims, execute reference plans with a scripted IK pick-place and
+   reject the ones that fail (see [batch generation](../scene_gen_pipeline.md)).
+6. **`openpi-client` upstream pins `numpy<2`.** If upstream un-pins it, it can
    rejoin the `test`/`all` extras and `test_volo_interop.py`'s
    `importorskip` becomes unnecessary (see [design](../design.md)).

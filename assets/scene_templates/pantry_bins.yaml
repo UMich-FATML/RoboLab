@@ -1,0 +1,8 @@
+name: pantry_bins
+theme: two bins and groceries to sort
+slots:
+  - {slot: bin_left, select: {category: bin}, require: {container: true}, count: [1, 1], placement: table, region: left}
+  - {slot: bin_right, select: {category: bin}, require: {container: true}, count: [1, 1], placement: table, region: right}
+  - {slot: cans, select: {category: canned food}, require: {graspable: true}, count: [1, 3], placement: table, region: center}
+  - {slot: boxes, select: {category: [boxed food, condiment, dairy]}, require: {graspable: true}, count: [1, 3], placement: table, region: center}
+goals: [sort_two_bins, put_in, count_k_of_n]

@@ -1,0 +1,8 @@
+name: mugs_reorient
+theme: mugs knocked over on the table, to set upright
+slots:
+  - {slot: mug_lying, select: {category: mug}, count: [1, 2], placement: table, region: any, pose: lying}
+  - {slot: mug_up, select: {category: mug}, count: [0, 1], placement: table, region: any}
+  - {slot: plate, select: {category: plate}, require: {support: true}, count: [0, 1], placement: table, region: any}
+  - {slot: decoy, select: {category: [fruit, canned food]}, require: {graspable: true}, count: [1, 2], placement: table, region: any}
+goals: [reorient, put_on, spatial]

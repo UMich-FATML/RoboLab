@@ -1,0 +1,8 @@
+name: fruit_bowl
+theme: fruit around a bowl on a breakfast table, with pantry decoys
+slots:
+  - {slot: bowl, select: {category: bowl}, require: {container: true}, count: [1, 1], placement: table, region: center}
+  - {slot: fruit, select: {category: fruit}, require: {graspable: true}, count: [2, 4], placement: table, region: any}
+  - {slot: fruit_in, select: {category: fruit}, require: {graspable: true}, count: [0, 2], placement: "in:bowl"}
+  - {slot: decoy, select: {category: [condiment, dairy, canned food]}, require: {graspable: true}, count: [1, 2], placement: table, region: any}
+goals: [put_in, take_out, count_k_of_n, spatial]

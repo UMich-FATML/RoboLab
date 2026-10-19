@@ -1,0 +1,96 @@
+# Semantic annotations for the scene generator (robolab/scene_gen/).
+#
+# Only semantics live here: display name, category (drives vague instructions
+# and template slot selection) and color (drives color-axis distractors).
+# Physical roles — container, flat support, graspable, stable poses — are
+# derived from the mesh by robolab/scene_gen/geometry.py and never hand-set.
+# An object absent from this file is never sampled.
+#
+# Fields: display (noun phrase), category, color, plural (optional).
+
+objects:
+  # --- fruit / vegetables ------------------------------------------------
+  avocado01:      {display: avocado, category: fruit, color: green}
+  lemon_01:       {display: lemon, category: fruit, color: yellow}
+  lemon_02:       {display: lemon, category: fruit, color: yellow}
+  lime01:         {display: lime, category: fruit, color: green}
+  lychee01:       {display: lychee, category: fruit, color: pink}
+  orange_01:      {display: orange, category: fruit, color: orange}
+  orange_02:      {display: orange, category: fruit, color: orange}
+  pomegranate01:  {display: pomegranate, category: fruit, color: red}
+  banana:         {display: banana, category: fruit, color: yellow}
+  apple:          {display: apple, category: fruit, color: red}
+  red_onion:      {display: red onion, category: vegetable, color: purple}
+  red_bell_pepper: {display: red bell pepper, category: vegetable, color: red}
+
+  # --- canned / boxed food -------------------------------------------------
+  tomato_soup_can: {display: tomato soup can, category: canned food, color: red}
+  tuna_can:        {display: tuna can, category: canned food, color: blue}
+  coffee_can:      {display: coffee can, category: canned food, color: blue}
+  spam_can:        {display: spam can, category: canned food, color: blue}
+  canned_peaches:  {display: can of peaches, category: canned food, color: orange}
+  corn_can:        {display: corn can, category: canned food, color: yellow}
+  green_beans_can: {display: green beans can, category: canned food, color: green}
+  tomato_sauce_can: {display: tomato sauce can, category: canned food, color: red}
+  pitted_cherries: {display: can of cherries, category: canned food, color: purple}
+  pineapple_slices_can: {display: pineapple can, category: canned food, color: blue}
+  sugar_box:       {display: sugar box, category: boxed food, color: yellow}
+  jello:           {display: jello box, category: boxed food, color: red}
+  chocolate_pudding: {display: pudding box, category: boxed food, color: brown}
+  raisin_box:      {display: raisin box, category: boxed food, color: orange}
+  popcorn_box:     {display: popcorn box, category: boxed food, color: blue}
+  butter:          {display: butter, category: dairy, color: orange}
+  cream_cheese:    {display: cream cheese, category: dairy, color: white}
+  yogurt_cup:      {display: yogurt cup, category: dairy, color: orange}
+  milk_carton:     {display: milk carton, category: dairy, color: orange}
+  bagel:           {display: bagel, category: bread, color: brown}
+  snickers_bar:    {display: candy bar, category: snack, color: brown}
+
+  # --- condiments ----------------------------------------------------------
+  mustard:          {display: mustard bottle, category: condiment, color: yellow}
+  mustard_bottle:   {display: mustard bottle, category: condiment, color: yellow}
+  ketchup_bottle:   {display: ketchup bottle, category: condiment, color: red}
+  mayonnaise_bottle: {display: mayonnaise bottle, category: condiment, color: white}
+  ranch_dressing:   {display: ranch dressing bottle, category: condiment, color: white}
+  bbq_sauce_bottle: {display: bbq sauce bottle, category: condiment, color: brown}
+
+  # --- blocks / toys ---------------------------------------------------------
+  red_block:    {display: red block, category: block, color: red}
+  blue_block:   {display: blue block, category: block, color: blue}
+  green_block:  {display: green block, category: block, color: green}
+  yellow_block: {display: yellow block, category: block, color: yellow}
+  rubiks_cube:  {display: Rubik's cube, category: toy, color: multicolor}
+
+  # --- kitchenware / dishware ------------------------------------------------
+  mug:          {display: mug, category: mug, color: white}
+  ceramic_mug:  {display: mug, category: mug, color: blue}
+  bowl:         {display: bowl, category: bowl, color: red}
+  wooden_bowl:  {display: wooden bowl, category: bowl, color: brown}
+  blackandbrassbowl_small: {display: black bowl, category: bowl, color: black}
+  blackandbrassbowl_large: {display: large black bowl, category: bowl, color: black}
+  plate_large:  {display: plate, category: plate, color: white}
+  clay_plates:  {display: clay plate, category: plate, color: brown}
+  measuring_cups: {display: measuring cup, category: utensil, color: green}
+  measuring_spoon: {display: measuring spoon, category: utensil, color: yellow}
+  spoon:        {display: spoon, category: utensil, color: grey}
+  spoon_1:      {display: spoon, category: utensil, color: teal}
+  fork_big:     {display: fork, category: utensil, color: white}
+
+  # --- bins / pails ------------------------------------------------------------
+  bin_a03:      {display: small metal bin, category: bin, color: grey}
+  bin_a04:      {display: metal bin, category: bin, color: grey}
+  bin_a05:      {display: large metal bin, category: bin, color: grey}
+  bin_b02:      {display: small metal bin, category: bin, color: grey}
+  bin_b03:      {display: metal bin, category: bin, color: grey}
+  bin_b04:      {display: large metal bin, category: bin, color: grey}
+  plasticpail_a01: {display: small pail, category: bin, color: blue}
+  plasticpail_a02: {display: green pail, category: bin, color: green}
+  cubebox_a02:  {display: cardboard box, category: box, color: brown}
+
+  # --- desk items ---------------------------------------------------------------
+  smartphone:      {display: phone, category: electronics, color: black}
+  remote_control:  {display: remote control, category: electronics, color: black}
+  glasses:         {display: glasses, category: accessory, color: black}
+  dry_erase_marker: {display: marker, category: stationery, color: white}
+  scissors:        {display: scissors, category: tool, color: grey}
+  clamp:           {display: clamp, category: tool, color: black}

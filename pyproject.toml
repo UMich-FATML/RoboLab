@@ -128,7 +128,7 @@ torch = { index = "pytorch-cu128" }
 torchvision = { index = "pytorch-cu128" }
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["tests", "tests_nosim"]
 
 [tool.ruff]
 target-version = "py311"

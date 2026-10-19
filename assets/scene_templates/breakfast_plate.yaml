@@ -1,0 +1,8 @@
+name: breakfast_plate
+theme: a plate with breakfast foods and a mug
+slots:
+  - {slot: plate, select: {category: plate}, require: {support: true}, count: [1, 1], placement: table, region: center}
+  - {slot: food, select: {category: [bread, fruit, dairy, snack]}, require: {graspable: true}, count: [2, 4], placement: table, region: any}
+  - {slot: on_plate, select: {category: [bread, fruit, snack]}, require: {graspable: true}, count: [0, 1], placement: "on:plate"}
+  - {slot: mug, select: {category: mug}, count: [0, 1], placement: table, region: any}
+goals: [put_on, take_out, spatial, put_in]

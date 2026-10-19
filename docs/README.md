@@ -90,4 +90,5 @@ Otherwise, pick whichever applies to your use case.
 ### AI Workflows
 
 - **[Scene Generation](scene.md#ai-workflows-scene-generation)** — Generate USD scenes from natural language using the `/robolab-scenegen` Claude Code skill. See [`skills/robolab-scenegen/`](../skills/robolab-scenegen/).
+- **[Batch Scene & Task Generation](scene_gen_pipeline.md)** — `scripts/scenegen.py`: template-driven, mesh-grounded scenes and planner-derived tasks in bulk, no LLM calls; CPU generation + GPU settle check.
 - **[Task Generation](task.md#ai-workflows-task-generation)** — Generate task files from natural language using the `/robolab-taskgen` Claude Code skill. See [`skills/robolab-taskgen/`](../skills/robolab-taskgen/).

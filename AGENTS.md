@@ -13,6 +13,7 @@ composable pieces.
 | `robolab/` | the package: `core/environments` (registration & run loop), `core/world` (state queries), `core/task` (conditionals & events), `core/events` (recorders, resets), `robots/` (per-robot obs/action/scene pieces), `core/utils/isaaclab_compat.py` (see rule 1) |
 | `policies/` | policy backends (`pi0_family/`, …) — each pairs a client with a runner |
 | `tests/` | pytest suite; `test_run_empty` and `test_frame_contract` boot IsaacSim and need a GPU |
+| `robolab/scene_gen/`, `tests_nosim/` | batch scene/task generator (`scripts/scenegen.py`, [docs/scene_gen_pipeline.md](docs/scene_gen_pipeline.md)) and its CPU-only tests (no IsaacSim boot) |
 | `docs/` | concept docs — `docs/README.md` is the index; `docs/design.md` records *why* |
 | `docs/plans/` | execution plans (active + completed) and the tech-debt list |
 | `examples/`, `dashboard/`, `analysis/` | supporting tooling |

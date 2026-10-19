@@ -1,5 +1,24 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- Batch scene/task generation (`scripts/scenegen.py`, `robolab/scene_gen/`,
+  `docs/scene_gen_pipeline.md`): committed templates are instantiated by a
+  seeded sampler; placements rest objects on a heightfield built from each
+  asset's mesh (stable poses, cavities, support surfaces), so scenes are
+  authored at rest; tasks come from goal facts proven solvable by backward
+  chaining and rendered into both terminations and instructions. 20 generated
+  smoke-test tasks under `robolab/tasks/generated/` (not part of the benchmark).
+- `tests_nosim/`: CPU-only tests for the generator (no IsaacSim boot).
+
+### Changed
+
+- `predicate_logic._read_local_mesh_points` delegates to the new pure-pxr
+  `hull_check.read_prim_mesh_points` (vectorized, numerically identical), so the
+  runtime predicates and the generator share one geometry definition.
+
 ## [0.3.1] - 2026-08-11
 
 ### Added

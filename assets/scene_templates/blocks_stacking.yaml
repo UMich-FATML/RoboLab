@@ -1,0 +1,7 @@
+name: blocks_stacking
+theme: colored blocks to stack, sometimes with a plate
+slots:
+  - {slot: blocks, select: {category: block}, require: {graspable: true}, count: [3, 4], placement: table, region: any}
+  - {slot: plate, select: {category: plate}, require: {support: true}, count: [0, 1], placement: table, region: front}
+  - {slot: toy, select: {category: toy}, count: [0, 1], placement: table, region: any}
+goals: [stack, put_on, spatial]
