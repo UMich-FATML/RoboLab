@@ -69,6 +69,10 @@ usage: [batch generation](../scene_gen_pipeline.md); decisions:
   child prim (env build fails, settle moves the child) — now excluded by the
   catalog; `check-settled` refuses files physics never touched; orientation is
   only checked for objects with discrete rest poses.
-- **Not done:** settle screenshots — `core/utils/render_utils.py` still imports
-  the IsaacSim-5-only `omni.isaac.core`; porting it belongs in the compat layer.
-  Reference plans are not executed (tech-debt item 5).
+- **Screenshots (follow-up):** `core/utils/render_utils.py` imported
+  `omni.isaac.core` / `isaacsim.core.api`, which are deprecated-only on 5.1 /
+  6.1. It now uses only version-stable APIs (pxr, omni.usd, timeline,
+  replicator), so it needs no compat-layer branch; thumbnails of the 20 scenes
+  are in `assets/scenes/generated/_images/`. Verified on isaac60 only — 5.x
+  camera rendering cannot run on this cluster (tech-debt item 3).
+- **Not done:** reference plans are not executed (tech-debt item 5).

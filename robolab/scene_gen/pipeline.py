@@ -329,7 +329,7 @@ def write_summary(scene_out: Path = DEFAULT_SCENE_OUT) -> None:
         "",
         "Built by `scripts/scenegen.py` (see `docs/scene_gen_pipeline.md`). Do not edit by hand:",
         "`_manifest.jsonl` (seed + predicates + facts + plan) is canonical; USDA and task files are",
-        "regenerable build products.",
+        "regenerable build products. Thumbnails (after settle `--screenshot`): `_images/<scene>.png`.",
         "",
         f"- live scenes: **{len(live)}**; attempts: {len({r['seed'] for r in rows})}; "
         f"pre-GPU rejections by stage: {dict(stages)}; settle rejections: {len(settle_rej)}",

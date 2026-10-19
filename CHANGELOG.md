@@ -13,6 +13,14 @@
   smoke-test tasks under `robolab/tasks/generated/` (not part of the benchmark).
 - `tests_nosim/`: CPU-only tests for the generator (no IsaacSim boot).
 
+### Fixed
+
+- Scene/object screenshots (`render_stage_frame`, used by `settle_scenes.py
+  --screenshot` and the screenshot scripts) failed on IsaacSim 5.1 and 6.1:
+  they imported modules that are deprecated-only there. The helper now uses
+  only version-stable APIs, resolves relative paths (which rendered blank
+  frames), and fails loudly on empty stages.
+
 ### Changed
 
 - `predicate_logic._read_local_mesh_points` delegates to the new pure-pxr
