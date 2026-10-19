@@ -34,6 +34,13 @@ from isaaclab.sensors.frame_transformer.frame_transformer import FrameTransforme
 from isaaclab.utils.math import transform_points
 from pxr import Gf, Usd, UsdGeom
 
+from robolab.core.utils.isaaclab_compat import (
+    articulation_base,
+    contact_force_matrix,
+    quat_from_wxyz,
+    quat_to_wxyz,
+)
+
 try:
     # IsaacSim 5.x — old-style scene extras are isaacsim.core.prims.XFormPrim
     from isaacsim.core.prims import XFormPrim
@@ -306,7 +313,7 @@ class WorldState:
     def get_joint_names(self, body_name: str) -> list[str]:
         """Get joint names for articulated body"""
         body = self.get_body(body_name)
-        if not isinstance(body, Articulation):
+        if not isinstance(body, articulation_base()):
             raise ValueError(f"Object {body_name} is not an articulation")
         return body.data.joint_names
 
@@ -317,7 +324,7 @@ class WorldState:
             env_id: None → (num_envs, num_joints), int → (num_joints,)
         """
         body = self.get_body(body_name)
-        if not isinstance(body, Articulation):
+        if not isinstance(body, articulation_base()):
             raise ValueError(f"Object {body_name} is not an articulation")
         if env_id is None:
             return body.data.joint_pos.clone().detach()
@@ -330,7 +337,7 @@ class WorldState:
             env_id: None → (num_envs, num_joints), int → (num_joints,)
         """
         body = self.get_body(body_name)
-        if not isinstance(body, Articulation):
+        if not isinstance(body, articulation_base()):
             raise ValueError(f"Object {body_name} is not an articulation")
         if env_id is None:
             return body.data.joint_vel.clone().detach()
@@ -362,10 +369,12 @@ class WorldState:
 
         if as_matrix:
             from robolab.core.utils.geometry_utils import pose_from_pos_quat
+            # pose_from_pos_quat consumes the runtime-convention quat; the
+            # tuple return is RoboLab's (w, x, y, z) contract (docs/frames.md).
             frame_pose_w = pose_from_pos_quat(frame_pos_w, frame_quat_w)
             return frame_pose_w
         else:
-            return frame_pos_w, frame_quat_w
+            return frame_pos_w, quat_to_wxyz(frame_quat_w)
 
 
     def get_frame_relative_transform(self, frame: str, frame_cfg_name: str="frames", as_matrix: bool=False, env_id: int | None = None) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
@@ -387,10 +396,12 @@ class WorldState:
 
         if as_matrix:
             from robolab.core.utils.geometry_utils import pose_from_pos_quat
+            # pose_from_pos_quat consumes the runtime-convention quat; the
+            # tuple return is RoboLab's (w, x, y, z) contract (docs/frames.md).
             frame_pose_tf = pose_from_pos_quat(frame_pos_tf, frame_quat_tf)
             return frame_pose_tf
         else:
-            return frame_pos_tf, frame_quat_tf
+            return frame_pos_tf, quat_to_wxyz(frame_quat_tf)
 
     #########################################################
     # Bodies
@@ -486,10 +497,12 @@ class WorldState:
 
         if as_matrix:
             from robolab.core.utils.geometry_utils import pose_from_pos_quat
+            # pose_from_pos_quat consumes the runtime-convention quat; the
+            # tuple return is RoboLab's (w, x, y, z) contract (docs/frames.md).
             pose_w = pose_from_pos_quat(pos, quat)
             return pose_w
         else:
-            return pos, quat
+            return pos, quat_to_wxyz(quat)
 
     def get_velocity(self, body_name: str, env_id: int | None = None) -> torch.Tensor:
         """Get velocity for a body. Returns zero velocity for XFormPrim extras.
@@ -538,6 +551,9 @@ class WorldState:
         """
         geom = self._get_local_geometry(body)
         pos, quat = self.get_pose(body, env_id=env_id)
+        # get_pose returns the (w, x, y, z) convention (docs/frames.md);
+        # transform_points speaks the runtime convention.
+        quat = quat_from_wxyz(quat)
 
         if env_id is not None:
             # Single env — transform and return legacy format
@@ -631,17 +647,18 @@ class WorldState:
         """Contact check for one concrete sensor pair (no alias resolution)."""
         contact_sensor = get_contact_sensor(self.env.scene, body1, body2)
         if env_id is not None:
-            force_matrix = contact_sensor.data.force_matrix_w[env_id]
+            force_matrix = contact_force_matrix(contact_sensor)[env_id]
             return torch.any(torch.abs(force_matrix) > force_threshold).item()
         else:
-            # force_matrix_w documented shape: (num_envs, num_bodies, num_filter_bodies, 3).
+            # The force matrix is (num_envs, num_bodies, num_filter_bodies, 3)
+            # on every stack (isaaclab 3.0 calls it normal_force_matrix_w).
             # The reduction below assumes exactly that. Fail loudly if IsaacLab
             # ever returns a different rank — silent shape drift here would
             # collapse the env axis and report cross-env contact (every env in
             # the batch reports True iff any one env has contact).
-            force_matrix = contact_sensor.data.force_matrix_w
+            force_matrix = contact_force_matrix(contact_sensor)
             assert force_matrix.ndim == 4 and force_matrix.shape[-1] == 3, (
-                f"in_contact: expected force_matrix_w shape (N, B, M, 3), "
+                f"in_contact: expected force matrix shape (N, B, M, 3), "
                 f"got {tuple(force_matrix.shape)}"
             )
             above = torch.abs(force_matrix) > force_threshold  # (N, B, M, 3)
@@ -686,7 +703,7 @@ class WorldState:
                 print(f"[WorldState] Batch sensor for '{body}' not found. Available sensors: {available_sensors}. Found '{body}' in contact with: {objects_in_contact}")
             return objects_in_contact
 
-        force_matrix = batch_sensor.data.force_matrix_w[env_id]
+        force_matrix = contact_force_matrix(batch_sensor)[env_id]
         force_above_threshold = torch.abs(force_matrix) > force_threshold
         any_force_per_body = torch.any(force_above_threshold, dim=-1)
         in_contact_mask = torch.any(any_force_per_body, dim=0)
@@ -716,11 +733,11 @@ class WorldState:
         """
         contact_sensor, is_reversed = get_contact_sensor_with_order(self.env.scene, body1, body2)
         if env_id is not None:
-            force_matrix = contact_sensor.data.force_matrix_w[env_id]
+            force_matrix = contact_force_matrix(contact_sensor)[env_id]
             net_force = force_matrix.sum(dim=(0, 1))  # (3,)
         else:
             # (num_envs, num_bodies, num_filter_bodies, 3) → (num_envs, 3)
-            force_matrix = contact_sensor.data.force_matrix_w
+            force_matrix = contact_force_matrix(contact_sensor)
             net_force = force_matrix.sum(dim=(1, 2))  # (N, 3)
 
         if is_reversed:

@@ -4,6 +4,8 @@
 import torch
 from isaaclab.sensors import ContactSensor, ContactSensorCfg
 
+from robolab.core.utils.isaaclab_compat import contact_sensor_base
+
 
 def create_contact_sensor_cfg(entity_1, entity_2, update_period=0.0, history_length=6, debug_vis=False):
         return ContactSensorCfg(
@@ -137,10 +139,16 @@ def get_contact_sensors(scene):
 
     Args:
         scene (InteractiveScene): The scene to get the contact sensors from.
+
+    On isaaclab 3.0 the live sensors are backend implementations that subclass
+    BaseContactSensor rather than the ContactSensor facade (see
+    robolab.core.utils.isaaclab_compat.contact_sensor_base), so the filter
+    matches whichever class the installed stack actually instantiates.
     """
+    base = contact_sensor_base()
     contact_sensors = {
         name: sensor for name, sensor in scene.sensors.items()
-        if isinstance(sensor, ContactSensor)
+        if isinstance(sensor, base)
     }
     return contact_sensors
 

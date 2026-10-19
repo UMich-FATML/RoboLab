@@ -20,10 +20,12 @@ from isaaclab.envs import ManagerBasedEnv, ManagerBasedEnvCfg, ManagerBasedRLEnv
 
 import robolab.constants
 from robolab.constants import get_output_dir
+from robolab.core.environments._render_presets import RENDERING_MODE_PRESETS
 from robolab.core.environments.config import parse_env_cfg
 from robolab.core.environments.env import RobolabEnv
 from robolab.core.events.utils import merge_events_cfg
 from robolab.core.task.task import resolve_instruction
+from robolab.core.utils.isaaclab_compat import convert_env_cfg_quats, isaaclab_major_version
 
 logger = logging.getLogger(__name__)
 
@@ -34,14 +36,23 @@ _RENDERER_TO_RTX_MODE = {"realtime": "RaytracedLighting", "pathtracing": "PathTr
 
 
 def _apply_render_settings(env_cfg: ManagerBasedEnvCfg, renderer: str, rendering_mode: str | None) -> None:
-    """Apply renderer mode and quality preset onto ``env_cfg.sim.render``.
+    """Apply renderer mode and quality preset for the installed isaaclab stack.
 
     Must be called before the simulation context is created (i.e. before
-    ``gym.make``/``RobolabEnv``), since :class:`isaaclab.sim.RenderCfg` is read
-    when the RTX renderer is configured.
+    ``gym.make``/``RobolabEnv``), since the renderer settings are read when
+    the RTX renderer is configured.
+
+    - isaaclab 2.x: mutates ``env_cfg.sim.render`` (a ``RenderCfg``), which
+      IsaacLab applies when the simulation context is created.
+    - isaaclab 3.0: ``SimulationCfg.render`` was removed (render settings
+      moved to per-camera ``IsaacRtxRendererCfg.global_settings``), so the
+      same carb settings — the ``/rtx/rendermode`` override plus the vendored
+      quality preset — are written directly. The app is always launched
+      before ``create_env`` and the settings are read at camera/renderer
+      creation during ``gym.make``, so writing them here still takes effect.
 
     Args:
-        env_cfg: The environment config whose ``sim.render`` (a ``RenderCfg``) is mutated.
+        env_cfg: The environment config (mutated on isaaclab 2.x only).
         renderer: ``"realtime"`` (RaytracedLighting, the default — applied as a no-op
             to preserve IsaacLab behavior) or ``"pathtracing"`` (PathTracing, which
             overrides the ``/rtx/rendermode`` carb setting).
@@ -50,6 +61,27 @@ def _apply_render_settings(env_cfg: ManagerBasedEnvCfg, renderer: str, rendering
     """
     if renderer not in _RENDERER_TO_RTX_MODE:
         raise ValueError(f"Unknown renderer '{renderer}'; expected one of {list(_RENDERER_TO_RTX_MODE)}.")
+    if rendering_mode is not None and rendering_mode not in RENDERING_MODE_PRESETS:
+        raise ValueError(
+            f"Unknown rendering_mode '{rendering_mode}'; expected one of {list(RENDERING_MODE_PRESETS)}."
+        )
+
+    if (isaaclab_major_version() or 0) >= 3:
+        settings = carb.settings.get_settings()
+        if rendering_mode is not None:
+            for key, value in RENDERING_MODE_PRESETS[rendering_mode].items():
+                settings.set(key, value)
+        # Record the renderer carb setting for both modes so the run positively
+        # logs which RTX renderer it used. On this stack there is no
+        # env_cfg.sim.render field to serialize it into env_cfg.json.
+        settings.set("/rtx/rendermode", _RENDERER_TO_RTX_MODE[renderer])
+        logger.info(
+            "RTX renderer: %s (rendermode=%s, preset=%s)",
+            renderer,
+            _RENDERER_TO_RTX_MODE[renderer],
+            rendering_mode or "default",
+        )
+        return
 
     if rendering_mode is not None:
         env_cfg.sim.render.rendering_mode = rendering_mode
@@ -170,6 +202,10 @@ def create_env(scene: str | ManagerBasedEnvCfg,
 
             # Configure the RTX renderer before the sim context is created.
             _apply_render_settings(env_cfg, renderer, rendering_mode)
+            # Roll RoboLab's authored (w, x, y, z) config quats into the
+            # installed stack's convention before the config reaches isaaclab
+            # (no-op on isaaclab 2.x).
+            convert_env_cfg_quats(env_cfg)
 
             # Merge events into the environment configuration if provided
             # This preserves existing events (like reset_scene_to_default) while adding new ones
@@ -203,6 +239,10 @@ def create_env(scene: str | ManagerBasedEnvCfg,
 
         # Configure the RTX renderer before the sim context is created.
         _apply_render_settings(env_cfg, renderer, rendering_mode)
+        # Roll RoboLab's authored (w, x, y, z) config quats into the installed
+        # stack's convention before the config reaches isaaclab (no-op on
+        # isaaclab 2.x; idempotent for a caller-reused cfg instance).
+        convert_env_cfg_quats(env_cfg)
 
         # Merge events into the environment configuration if provided
         # This preserves existing events (like reset_scene_to_default) while adding new ones

@@ -158,6 +158,7 @@ class GroundTruthStateExporter:
 
     def _export_robot(self, env_id: int) -> dict:
         """EE pose (env-local pos, world-frame wxyz quat), gripper state, contacts."""
+        from robolab.core.utils.isaaclab_compat import quat_to_wxyz
         from robolab.core.world.world_state import get_world
 
         world = get_world(self.env)
@@ -165,7 +166,7 @@ class GroundTruthStateExporter:
         body_idx = robot.data.body_names.index(self.ee_body_name)
         env_origin = self.env.scene.env_origins[env_id].cpu().numpy().astype(np.float32)
         ee_pos = robot.data.body_pos_w[env_id, body_idx, :].cpu().numpy().astype(np.float32) - env_origin
-        ee_quat = robot.data.body_quat_w[env_id, body_idx, :].cpu().numpy().astype(np.float32)
+        ee_quat = quat_to_wxyz(robot.data.body_quat_w[env_id, body_idx, :]).cpu().numpy().astype(np.float32)
         joint_names = robot.data.joint_names
         if self.gripper_joint_name in joint_names:
             joint_idx = joint_names.index(self.gripper_joint_name)

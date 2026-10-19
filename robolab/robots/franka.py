@@ -16,6 +16,7 @@ from isaaclab.utils.assets import ISAACLAB_NUCLEUS_DIR
 from isaaclab.utils.math import subtract_frame_transforms
 
 from robolab.core.environments.scene_fixture import FRANKA_TABLE_FIXTURE
+from robolab.core.utils.isaaclab_compat import as_torch, quat_to_wxyz
 from robolab.robots.franka_definitions import *  # noqa
 
 # Create a copy of the default frame marker config
@@ -164,7 +165,7 @@ def ee_frame_pos(env: ManagerBasedRLEnv, frames_cfg: SceneEntityCfg = SceneEntit
     frames: FrameTransformer = env.scene[frames_cfg.name]
     robot: Articulation = env.scene["robot"]
     ee_frame_pos, _ = subtract_frame_transforms(
-        robot.data.root_pos_w, robot.data.root_quat_w, frames.data.target_pos_w[:, 0, :]
+        as_torch(robot.data.root_pos_w), as_torch(robot.data.root_quat_w), frames.data.target_pos_w[:, 0, :]
     )
     return ee_frame_pos
 
@@ -174,9 +175,9 @@ def ee_frame_quat(env: ManagerBasedRLEnv, frames_cfg: SceneEntityCfg = SceneEnti
     frames: FrameTransformer = env.scene[frames_cfg.name]
     robot: Articulation = env.scene["robot"]
     _, ee_frame_quat = subtract_frame_transforms(
-        robot.data.root_pos_w, robot.data.root_quat_w, q02=frames.data.target_quat_w[:, 0, :]
+        as_torch(robot.data.root_pos_w), as_torch(robot.data.root_quat_w), q02=frames.data.target_quat_w[:, 0, :]
     )
-    return ee_frame_quat
+    return quat_to_wxyz(ee_frame_quat)
 
 
 def gripper_pos(env: ManagerBasedRLEnv, robot_cfg: SceneEntityCfg = SceneEntityCfg("robot")) -> torch.Tensor:

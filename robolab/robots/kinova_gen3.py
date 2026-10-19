@@ -21,6 +21,7 @@ from isaaclab.sensors.frame_transformer.frame_transformer_cfg import FrameTransf
 from isaaclab.utils import configclass
 
 from robolab.constants import ROBOTS_DIR
+from robolab.core.utils.isaaclab_compat import quat_to_wxyz
 from robolab.robots.droid import BinaryJointPositionZeroToOneActionCfg
 
 ARM_JOINT_NAMES = [f"joint_{index}" for index in range(1, 8)]
@@ -173,7 +174,7 @@ def eef_quat(
 ):
     frames = env.scene[asset_cfg.name]
     index = frames.data.target_frame_names.index("eef_frame")
-    return _to_torch(frames.data.target_quat_w)[:, index, :]
+    return quat_to_wxyz(_to_torch(frames.data.target_quat_w)[:, index, :])
 
 
 @configclass

@@ -60,7 +60,14 @@ def transform_bbox_to_pose(lower, upper, translation, quaternion_wxyz, inverse=T
 
 
 def pose_from_pos_quat(pos: torch.Tensor, quat: torch.Tensor) -> torch.Tensor:
-    """Build a 4×4 pose given xy (Tensor[2]), z, and quaternion."""
+    """Build a 4×4 pose from a position and a runtime-convention quaternion.
+
+    ``quat`` must be in the installed isaaclab's runtime convention ((w, x, y, z)
+    on isaaclab 2.x, (x, y, z, w) on 3.x) — it is passed straight to
+    ``matrix_from_quat``. Callers holding a RoboLab (w, x, y, z) quaternion
+    (e.g. from ``WorldState.get_pose``) must convert it first with
+    :func:`robolab.core.utils.isaaclab_compat.quat_from_wxyz`.
+    """
     import isaaclab.utils.math as math_utils
     rot = math_utils.matrix_from_quat(quat)
     return math_utils.make_pose(pos, rot) # Returns a [..., 4, 4] tensor

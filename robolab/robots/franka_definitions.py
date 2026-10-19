@@ -15,6 +15,8 @@ from isaaclab.sensors.frame_transformer.frame_transformer import FrameTransforme
 from isaaclab.utils import configclass
 from isaaclab.utils.math import subtract_frame_transforms
 
+from robolab.core.utils.isaaclab_compat import as_torch, quat_to_wxyz
+
 ########################################################
 # Actions
 ########################################################
@@ -108,7 +110,7 @@ def ee_frame_pos(env: ManagerBasedRLEnv, ee_frame_cfg: SceneEntityCfg = SceneEnt
     ee_frame: FrameTransformer = env.scene[ee_frame_cfg.name]
     robot: Articulation = env.scene["robot"]
     ee_frame_pos, _ = subtract_frame_transforms(
-        robot.data.root_pos_w, robot.data.root_quat_w, ee_frame.data.target_pos_w[:, 0, :]
+        as_torch(robot.data.root_pos_w), as_torch(robot.data.root_quat_w), ee_frame.data.target_pos_w[:, 0, :]
     )
     return ee_frame_pos
 
@@ -118,9 +120,9 @@ def ee_frame_quat(env: ManagerBasedRLEnv, ee_frame_cfg: SceneEntityCfg = SceneEn
     ee_frame: FrameTransformer = env.scene[ee_frame_cfg.name]
     robot: Articulation = env.scene["robot"]
     _, ee_frame_quat = subtract_frame_transforms(
-        robot.data.root_pos_w, robot.data.root_quat_w, q02=ee_frame.data.target_quat_w[:, 0, :]
+        as_torch(robot.data.root_pos_w), as_torch(robot.data.root_quat_w), q02=ee_frame.data.target_quat_w[:, 0, :]
     )
-    return ee_frame_quat
+    return quat_to_wxyz(ee_frame_quat)
 
 
 def gripper_pos(env: ManagerBasedRLEnv, robot_cfg: SceneEntityCfg = SceneEntityCfg("robot")) -> torch.Tensor:

@@ -28,6 +28,7 @@ from isaaclab.utils.math import subtract_frame_transforms
 
 from robolab.constants import ROBOTS_DIR
 from robolab.core.environments.scene_fixture import FRANKA_TABLE_FIXTURE
+from robolab.core.utils.isaaclab_compat import quat_to_wxyz
 
 # Offset of the end-effector control frame relative to base_link. Used by:
 #   - DroidCfg.frames "eef_frame" (FrameTransformer publishes this pose for downstream code)
@@ -271,7 +272,7 @@ def ee_quat(
         _to_torch(robot.data.root_quat_w),
         q02=_to_torch(robot.data.body_quat_w)[:, body_idx, :],
     )
-    return quat
+    return quat_to_wxyz(quat)
 
 
 def eef_pos(env: ManagerBasedRLEnv, asset_cfg: SceneEntityCfg = SceneEntityCfg("frames")):
@@ -297,7 +298,7 @@ def eef_quat(env: ManagerBasedRLEnv, asset_cfg: SceneEntityCfg = SceneEntityCfg(
         _to_torch(robot.data.root_quat_w),
         q02=_to_torch(frames.data.target_quat_w)[:, idx, :],
     )
-    return quat
+    return quat_to_wxyz(quat)
 
 ########################################################
 # Actions
