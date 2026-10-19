@@ -1,0 +1,10 @@
+#!/bin/sh
+# RoboLab pre-commit: docs/map lint (enforced, stdlib-only) + ruff when on PATH.
+# Enable once per clone:  git config core.hooksPath .githooks
+# Rules: docs/design.md core belief 4; commands: AGENTS.md → Toolchain.
+python3 scripts/check_docs.py || exit 1
+if command -v ruff >/dev/null 2>&1; then
+    ruff check . || exit 1
+else
+    echo "pre-commit: ruff not on PATH — skipped (docs lint ran). Install with: uv tool install ruff" >&2
+fi

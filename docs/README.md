@@ -42,11 +42,17 @@ The core concepts are:
 - **[Data Storage and Output](data.md)** — Output directory structure, HDF5 layout, and episode result fields
 - **[Replaying Recorded Episodes](replay.md)** — Playing back recorded HDF5 episodes: initial-state restore, recorded env config, faithful-reproduction checklist, and state validation
 - **[Analysis and Results Parsing](analysis.md)** — Scripts for summarizing, comparing, and auditing experiment results
+- **[Benchmark](benchmark.md)** — Benchmark tasks, evaluation protocol, and scoring
 #### Debug
 - **[Debugging](debug.md)** — Verbose/debug flags, world state inspection, and diagnostic scripts
 - **[Known Issues](known_issues.md)** — Documented bugs and workarounds
+- **[Running & Verifying](running.md)** — Per-stack venvs, running the test suite (`--junit-xml`), camera-less smoke runs, and Slurm batch patterns
 #### Ecosystem
 - **[Ecosystem](ecosystem.md)** — Task libraries and projects built on RoboLab
+#### Repository
+- **[Coordinate Frames](frames.md)** — The frames and quaternion contract (`(w, x, y, z)`) every pose consumer must respect
+- **[Design](design.md)** — Core beliefs and the decision log: why the compat layer, uv conflict groups, and the wxyz contract exist
+- **[Plans](plans/README.md)** — Execution plans and the tech-debt list
 
 
 ## Developing and Working with RoboLab
