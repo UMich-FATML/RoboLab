@@ -12,10 +12,11 @@ authors = [{name = "Xuning Yang"}]
 dependencies = [
     # Core
     # IsaacLab + IsaacSim are NOT pinned here: they are mutually-exclusive,
-    # version-specific stacks selected via the `isaac50` / `isaac51` extras
-    # below (see [tool.uv].conflicts). Install with e.g.
+    # version-specific stacks selected via the `isaac50` / `isaac51` / `isaac60`
+    # extras below (see [tool.uv].conflicts). Install with e.g.
     #   uv sync --extra isaac50   # IsaacLab 2.2.0 / IsaacSim 5.0.0  (default)
     #   uv sync --extra isaac51   # IsaacLab 2.3.2.post1 / IsaacSim 5.1.0
+    #   uv sync --extra isaac60   # IsaacLab 3.0.0rc1 / IsaacSim 6.1.0 (Python 3.12)
     "torch",
     "numpy",
     "gymnasium",
@@ -60,6 +61,15 @@ isaac51 = [
     "isaaclab==2.3.2.post1",
     "isaacsim[all,extscache]==5.1.0",
 ]
+# Experimental: IsaacLab 3.0 is a release candidate and flips the quaternion
+# convention to (x, y, z, w); RoboLab converts at the boundary
+# (robolab/core/utils/isaaclab_compat.py) so its own (w, x, y, z) contract
+# holds on every stack. IsaacSim 6.x ships cp312-only wheels, so this extra
+# resolves only under Python 3.12 — create the venv with
+# `uv venv --python 3.12` before `uv sync --extra isaac60`.
+isaac60 = [
+    "isaaclab[isaacsim]==3.0.0rc1; python_version == '3.12'",
+]
 analysis = ["sbi"]
 test = ["pytest"]
 all = ["sbi", "pytest"]
@@ -82,10 +92,10 @@ dashboard = ["templates/*.html", "static/*"]
 [tool.uv]
 prerelease = "allow"
 index-strategy = "unsafe-best-match"
-# The two IsaacLab/IsaacSim stacks cannot be co-installed in one environment.
-# Declaring them conflicting lets a single lockfile cover both; pick one per
-# environment with `uv sync --extra isaac50` or `--extra isaac51`.
-conflicts = [[{ extra = "isaac50" }, { extra = "isaac51" }]]
+# The IsaacLab/IsaacSim stacks cannot be co-installed in one environment.
+# Declaring them conflicting lets a single lockfile cover all; pick one per
+# environment with `uv sync --extra isaac50` / `--extra isaac51` / `--extra isaac60`.
+conflicts = [[{ extra = "isaac50" }, { extra = "isaac51" }, { extra = "isaac60" }]]
 # isaacsim (both the 5.0 and 5.1 kernels) pins websockets==12.0 — stale
 # metadata in practice: kit only uses websockets for livestream/omni.services,
 # which headless eval never touches, and the benchmark runs routinely on

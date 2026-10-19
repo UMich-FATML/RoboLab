@@ -27,7 +27,7 @@ See the [Ecosystem](docs/ecosystem.md) page for projects built on RoboLab.
 
 ## Getting Started
 
-Requires [uv](https://docs.astral.sh/uv/getting-started/installation/) and a system `ffmpeg` (used for video recording). The IsaacSim/IsaacLab stack is selected at install time via a mutually-exclusive extra — `isaac50` (IsaacSim 5.0 / IsaacLab 2.2.0, default) or `isaac51` (IsaacSim 5.1 / IsaacLab 2.3.2.post1). See [Requirements](#requirements) for hardware.
+Requires [uv](https://docs.astral.sh/uv/getting-started/installation/) and a system `ffmpeg` (used for video recording). The IsaacSim/IsaacLab stack is selected at install time via a mutually-exclusive extra — `isaac50` (IsaacSim 5.0 / IsaacLab 2.2.0, default), `isaac51` (IsaacSim 5.1 / IsaacLab 2.3.2.post1), or `isaac60` (IsaacSim 6.1 / IsaacLab 3.0.0rc1, experimental). See [Requirements](#requirements) for hardware.
 
 ### Installation
 
@@ -39,14 +39,19 @@ uv venv --python 3.11
 source .venv/bin/activate
 uv sync --extra isaac50          # IsaacSim 5.0 / IsaacLab 2.2.0 (default)
 # uv sync --extra isaac51        # IsaacSim 5.1 / IsaacLab 2.3.2.post1
+# uv sync --extra isaac60        # IsaacSim 6.1 / IsaacLab 3.0.0rc1 (Python 3.12 — see below)
 ```
 
-The two stacks cannot coexist in one environment. To keep both available, install each into its own venv via `UV_PROJECT_ENVIRONMENT`:
+The stacks cannot coexist in one environment. To keep several available, install each into its own venv via `UV_PROJECT_ENVIRONMENT`:
 
 ```bash
 UV_PROJECT_ENVIRONMENT=.venv    uv sync --extra isaac50
 UV_PROJECT_ENVIRONMENT=.venv-51 uv sync --extra isaac51
+UV_PROJECT_ENVIRONMENT=.venv-60 uv venv --python 3.12 .venv-60 && \
+UV_PROJECT_ENVIRONMENT=.venv-60 uv sync --extra isaac60
 ```
+
+The `isaac60` stack requires Python 3.12 (IsaacSim 6.x ships cp312-only wheels), so its venv must be created with `uv venv --python 3.12` before `uv sync`. It runs on R590-class GPU drivers, where the IsaacSim 5.x stacks' RTX renderer is unsupported.
 
 Verify installation:
 ```bash
@@ -163,12 +168,14 @@ Full documentation is at **[docs/README.md](docs/README.md)**, covering:
 
 | Dependency | Version |
 |---|---|
-| Isaac Sim | 5.0 (default) or 5.1 |
-| Isaac Lab | 2.2.0 (default) or 2.3.2.post1 |
-| Python | 3.11 |
+| Isaac Sim | 5.0 (default), 5.1, or 6.1 (experimental, Python 3.12) |
+| Isaac Lab | 2.2.0 (default), 2.3.2.post1, or 3.0.0rc1 (experimental) |
+| Python | 3.11 (3.12 for the `isaac60` stack) |
 | Linux | Ubuntu 22.04+ |
 
 > **Note on simulator versions**: IsaacSim 5.0 and 5.1 ship different PhysX builds, so contact-rich dynamics (grasping, object settling) are not invariant across the two stacks. Benchmark results may be subject to differences in simulator dynamics between versions, and are best compared against runs on the same stack. Recorded demonstrations replay most faithfully on the stack they were recorded with.
+
+> **Note on the `isaac60` stack**: IsaacLab 3.0 is a release candidate that flips the quaternion convention from (w, x, y, z) to (x, y, z, w) and removes `SimulationCfg.render`. RoboLab converts at the boundary (`robolab/core/utils/isaaclab_compat.py`), so its own (w, x, y, z) data contract (docs/frames.md), configs, and CLI behave identically on every stack — but dynamics may differ from the 5.x stacks and the upstream isaaclab is still an rc, so treat `isaac60` benchmark numbers as experimental.
 
 - **Disk space**: ~8 GB (assets account for ~7 GB)
 - **GPU**: NVIDIA RTX GPU required. Recommend 48GB+ VRAM. See [Isaac Lab's hardware requirements](https://isaac-sim.github.io/IsaacLab/main/source/setup/installation/index.html#system-requirements) for recommended GPUs and VRAM.
