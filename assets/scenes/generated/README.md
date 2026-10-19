@@ -2,7 +2,7 @@
 
 Built by `scripts/scenegen.py` (see `docs/scene_gen_pipeline.md`). Do not edit by hand:
 `_manifest.jsonl` (seed + predicates + facts + plan) is canonical; USDA and task files are
-regenerable build products.
+regenerable build products. Thumbnails (after settle `--screenshot`): `_images/<scene>.png`.
 
 - live scenes: **20**; attempts: 21; pre-GPU rejections by stage: {'hosted_drop': 1}; settle rejections: 0
 - goal families: {'spatial': 3, 'stack': 3, 'put_on': 3, 'take_out': 3, 'put_in': 4, 'count_k_of_n': 2, 'reorient': 2}
