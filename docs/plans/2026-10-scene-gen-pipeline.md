@@ -1,6 +1,7 @@
 # Batch Scene/Task Generation Pipeline
 
-**Status: active** (2026-10, branch `scene-gen-pipeline`)
+**Status: completed** (2026-10, branch `scene-gen-pipeline`, commits
+`e30a031..23956bf`)
 
 ## Goal
 
@@ -47,11 +48,27 @@ usage: [batch generation](../scene_gen_pipeline.md); decisions:
 - [x] Logic layer (rules, backward chainer, plan replay, DAG)
 - [x] Templates (6), sampler, grounded placer, static check, USDA writer
 - [x] Quest (8 families), renderer, pipeline + CLI, GPU validation script
-- [x] 20 tasks generated (20/20 accepted in 20 attempts, 8/8 families);
-      `validate-cpu` 0 failures; `tests_nosim` 23 passed
-- [ ] GPU settle + `check-settled`, `verify_task_valid`, empty episodes
-- [ ] Full suite on the isaac60 stack (`--junit-xml`)
+- [x] 20 tasks generated; `validate-cpu` 0 failures; `tests_nosim` 23 passed
+- [x] GPU settle + `check-settled`, `verify_task_valid`, empty episodes
+- [x] Full suite on isaac60 and camera-less isaac51 (`--junit-xml`)
 
 ## Outcome
 
-(filled in when completed)
+- **Generation:** 20 live tasks from 21 attempts (1 `hosted_drop` rejection),
+  6 templates, 7 goal families (`sort_two_bins` renders in tests but was not
+  drawn in this seed), 13 simple / 6 moderate / 1 complex.
+- **Grounding held:** physics settle moved all 102 objects < 2 cm (mean
+  0.10 cm on the table, 0.41 cm in containers, 0.47 cm on supports, 0.11 cm
+  lying; worst 1.89 cm) — zero settle rejections. Settle confirmed the
+  authored scenes instead of constructing them.
+- **Simulator checks (isaac60, camera node):** `verify_task_valid` 20/20;
+  empty episodes 3/3, none terminating without a policy.
+- **Non-regression** (the mesh-reader refactor touches a runtime path):
+  isaac60 full suite 227/227; isaac51 camera-less 216 passed, 3 by-design skips.
+- **Found by the GPU loop and fixed:** 3 assets carry their rigid body on a
+  child prim (env build fails, settle moves the child) — now excluded by the
+  catalog; `check-settled` refuses files physics never touched; orientation is
+  only checked for objects with discrete rest poses.
+- **Not done:** settle screenshots — `core/utils/render_utils.py` still imports
+  the IsaacSim-5-only `omni.isaac.core`; porting it belongs in the compat layer.
+  Reference plans are not executed (tech-debt item 5).

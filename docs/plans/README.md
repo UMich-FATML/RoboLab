@@ -14,10 +14,11 @@ it. Simple changes don't need one — the commit body is enough.
 
 ## Active plans
 
-- [2026-10 — Batch scene/task generation pipeline](2026-10-scene-gen-pipeline.md)
+(none)
 
 ## Completed plans
 
+- [2026-10 — Batch scene/task generation pipeline](2026-10-scene-gen-pipeline.md)
 - [2026-10 — IsaacSim 6.1 / IsaacLab 3.0 support](2026-10-isaac60-support.md)
 
 ## Tech debt
