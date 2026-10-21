@@ -3,7 +3,6 @@
 
 from pathlib import Path
 
-
 REPO_ROOT = Path(__file__).resolve().parents[1]
 ASSET_DIR = REPO_ROOT / "assets" / "robots" / "kinova_gen3_robotiq_2f85"
 USD_LAYERS = (

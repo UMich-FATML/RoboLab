@@ -14,12 +14,13 @@ Usage:
     python scatter_objects.py [--datasets handal hope hot3d ycb vomp] [--output-dir OUTPUT_DIR] [--grid-spacing 0.15]
 """
 
-import os
+import argparse
 import json
 import math
-import argparse
-import numpy as np
+import os
 from pathlib import Path
+
+import numpy as np
 
 
 def main():
@@ -47,14 +48,14 @@ def main():
     app = SimulationApp({'headless': True})
 
     # Now import the rest
-    from pxr import UsdGeom, Gf
-    from isaacsim.sensors.camera import Camera
-    from isaacsim.core.api import World
-    from isaacsim.core.api.objects.ground_plane import GroundPlane
-    from omni.isaac.core.utils.viewports import set_camera_view
     import omni.isaac.core.utils.prims as prim_utils
     import omni.usd
+    from isaacsim.core.api import World
+    from isaacsim.core.api.objects.ground_plane import GroundPlane
+    from isaacsim.sensors.camera import Camera
+    from omni.isaac.core.utils.viewports import set_camera_view
     from PIL import Image
+    from pxr import Gf, UsdGeom
 
     # Setup paths
     script_dir = Path(__file__).parent

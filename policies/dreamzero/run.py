@@ -51,12 +51,11 @@ app_launcher = AppLauncher(args_cli)
 simulation_app = app_launcher.app
 
 import robolab.constants  # noqa: E402
+from policies.dreamzero.client import DreamZeroClient  # noqa: E402
 from robolab.registrations.droid.auto_env_registrations_jointpos import (  # noqa: E402
     auto_register_droid_envs as _register,
 )
 from robolab.registrations.droid.camera_presets import WRIST_LEFT_RIGHT_HEAD  # noqa: E402
-
-from policies.dreamzero.client import DreamZeroClient  # noqa: E402
 
 robolab.constants.ENABLE_SUBTASK_PROGRESS_CHECKING = args_cli.enable_subtask
 

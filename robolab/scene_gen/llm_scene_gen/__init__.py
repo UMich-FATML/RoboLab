@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+from .feedback_system import FeedbackSystem
+from .physical_solver import PhysicalSolver
 from .predicates import (
     ObjectState,
     PlaceOnBasePredicate,
@@ -8,8 +10,6 @@ from .predicates import (
     parse_predicates_from_dict,
 )
 from .spatial_solver import SpatialSolver
-from .physical_solver import PhysicalSolver
-from .feedback_system import FeedbackSystem
 
 __all__ = [
     "ObjectState",

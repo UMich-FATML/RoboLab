@@ -1,12 +1,14 @@
 # SPDX-FileCopyrightText: Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-from robolab.constants import OBJECT_DIR, OBJECT_CATALOG_PATH
-from typing import List, Dict, Any
 import json
-from pathlib import Path
-import sys
 import os
+import sys
+from pathlib import Path
+from typing import Any, Dict, List
+
+from robolab.constants import OBJECT_CATALOG_PATH, OBJECT_DIR
+
 
 def _iter_object_files(root: Path = Path(OBJECT_DIR)) -> List[Path]:
     """Return all USD files under the *root* directory, excluding subfolders starting with '_' and any 'materials' directories."""
@@ -54,7 +56,7 @@ def fix_absolute_paths_in_usd(usd_path: Path, dry_run: bool = False) -> tuple[bo
     Returns:
         Tuple of (changes_made, missing_files)
     """
-    from pxr import Usd, Sdf
+    from pxr import Sdf, Usd
 
     stage = Usd.Stage.Open(str(usd_path))
     if not stage:
@@ -143,8 +145,8 @@ def set_default_prim_one_level_down(usd_path: Path, dry_run: bool = False, renam
     Returns:
         True if the file was modified (or would be modified in dry_run), False otherwise
     """
-    import omni.usd
     import omni.kit.commands
+    import omni.usd
     from pxr import Usd
 
     stage = Usd.Stage.Open(str(usd_path))
@@ -224,8 +226,9 @@ def update_friction_info(usd_path: Path, static_friction: float = 2.0, dynamic_f
     """
     Update friction properties of the physics material in the USD file.
     """
-    from robolab.core.utils.physics_utils import update_friction
     from pxr import Usd
+
+    from robolab.core.utils.physics_utils import update_friction
     stage = Usd.Stage.Open(str(usd_path))
     if not stage:
         print(f"Failed to open stage: {usd_path}")
@@ -254,7 +257,7 @@ def update_mass_api(mass: float, usd_path: Path, dry_run: bool = False) -> bool:
     Returns:
         True if the file was modified (or would be modified in dry_run), False otherwise
     """
-    from pxr import Usd, UsdPhysics, UsdGeom
+    from pxr import Usd, UsdGeom, UsdPhysics
 
     stage = Usd.Stage.Open(str(usd_path))
     if not stage:

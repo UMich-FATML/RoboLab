@@ -43,9 +43,8 @@ app_launcher = AppLauncher(args_cli)
 simulation_app = app_launcher.app
 
 import robolab.constants  # noqa: E402
-from robolab.registrations.droid.auto_env_registrations_jointpos import auto_register_droid_envs  # noqa: E402
-
 from policies.gr00t.client import GR00TDroidJointposClient  # noqa: E402
+from robolab.registrations.droid.auto_env_registrations_jointpos import auto_register_droid_envs  # noqa: E402
 
 robolab.constants.ENABLE_SUBTASK_PROGRESS_CHECKING = args_cli.enable_subtask
 robolab.constants.RECORD_IMAGE_DATA = args_cli.record_image_data

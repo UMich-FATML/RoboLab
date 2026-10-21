@@ -6,12 +6,12 @@ Render BOP objects with PyVista and (optionally) generate ChatGPT descriptions.
 This gives nicer rasterisation than pyrender without needing an OpenGL context.
 """
 
-import os
-import sys
-import json
-import time
 import base64
 import io
+import json
+import os
+import sys
+import time
 from pathlib import Path
 
 # Optional: load environment variables from .env so OPENAI_API_KEY can be set there
@@ -27,14 +27,15 @@ try:
 except ImportError:
     pass  # dotenv not available – fall back to existing environment
 
-import numpy as np
-from PIL import Image
-import pyvista as pv  # pip install pyvista
-import trimesh        # still used for bounding‐box centring
-from openai import OpenAI
 import argparse
-import zipfile
 import tempfile
+import zipfile
+
+import numpy as np
+import pyvista as pv  # pip install pyvista
+import trimesh  # still used for bounding‐box centring
+from openai import OpenAI
+from PIL import Image
 
 # Use off-screen rendering globally (headless / SSH).  PyVista API differs across versions.
 try:
@@ -127,7 +128,7 @@ class PyVistaBOPRenderer:
         uvs is a (N, 2) array of texture coordinates or None. Requires pxr USD.
         """
         try:
-            from pxr import Usd, UsdGeom, UsdShade, Sdf
+            from pxr import Sdf, Usd, UsdGeom, UsdShade
         except ImportError:
             if self.debug:
                 print("[WARNING] pxr module not available – cannot read USD meshes.")

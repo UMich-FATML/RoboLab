@@ -1,14 +1,16 @@
 # SPDX-FileCopyrightText: Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-from isaaclab.utils import configclass
-from isaaclab.managers import TerminationTermCfg as DoneTerm
-import isaaclab.envs.mdp as mdp
 from dataclasses import dataclass
 
-from robolab.core.task.task import Task
-from robolab.core.task.conditionals import object_on_top
+import isaaclab.envs.mdp as mdp
+from isaaclab.managers import TerminationTermCfg as DoneTerm
+from isaaclab.utils import configclass
+
 from robolab.core.scenes.utils import import_scene
+from robolab.core.task.conditionals import object_on_top
+from robolab.core.task.task import Task
+
 
 @configclass
 class FruitsOrangesOnPlateTestTerminations:

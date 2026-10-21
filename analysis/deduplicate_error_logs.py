@@ -27,12 +27,11 @@ Example:
     Step 600: Same error again → keep step 600 (it's after a gap)
 """
 
-import os
-import json
 import argparse
 import glob
+import json
+import os
 from collections import defaultdict
-
 
 # Target error codes to deduplicate
 TARGET_CODES = {

@@ -8,15 +8,17 @@ It uses occupancy grids and physics simulation to ensure physically plausible
 configurations.
 """
 
-import numpy as np
-import random
 import math
-from typing import Optional, Any
+import random
+from typing import Any, Optional
+
+import numpy as np
+
 from .predicates import (
     ObjectState,
     PhysicalPredicate,
-    PlaceOnPredicate,
     PlaceInPredicate,
+    PlaceOnPredicate,
     PredicateType,
 )
 
@@ -978,9 +980,9 @@ class PhysicalSolver:
             return True, {"message": "No physics validation (simulation not available)"}
 
         try:
-            import omni.usd
             import omni.timeline
-            from pxr import UsdGeom, Gf
+            import omni.usd
+            from pxr import Gf, UsdGeom
 
             # Load scene
             print(
@@ -1112,8 +1114,8 @@ class PhysicalSolver:
             return
 
         try:
-            import omni.usd
             import omni.timeline
+            import omni.usd
 
             print(f"[PhysicalSolver] Settling scene: {scene_path}")
 

@@ -9,18 +9,19 @@ convex hull collision detection and iterative optimization to resolve constraint
 """
 
 import math
-import numpy as np
 import random
 from typing import Optional
+
+import numpy as np
 from scipy.spatial import ConvexHull
 
 from .predicates import (
     ObjectState,
-    SpatialPredicate,
-    PredicateType,
-    PlaceOnBasePredicate,
-    RelativePositionPredicate,
     PhysicalPredicate,
+    PlaceOnBasePredicate,
+    PredicateType,
+    RelativePositionPredicate,
+    SpatialPredicate,
 )
 
 

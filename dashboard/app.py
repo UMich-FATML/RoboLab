@@ -19,12 +19,12 @@ from dashboard.loaders.catalog import (
     filter_tasks_by_folder,
     get_task,
     list_task_folders,
-    validate_task_folder,
     load_scene_stats,
     load_scenes,
     load_tasks,
     resolve_scenes_metadata_dir,
     task_summary,
+    validate_task_folder,
 )
 from dashboard.loaders.hdf5 import episode_timeseries, list_episode_keys
 from dashboard.loaders.local import LocalLoader, _score_ci, _sr_beta_ci

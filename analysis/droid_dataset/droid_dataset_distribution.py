@@ -19,17 +19,17 @@ Usage:
     python analysis/droid_dataset/droid_dataset_distribution.py --no-plot
 """
 
+import argparse
 import json
 import os
 import re
-import argparse
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
-from matplotlib_venn import venn2, venn2_circles
 from collections import Counter, defaultdict
-from typing import Dict, List, Any, Optional
+from typing import Any, Dict, List, Optional
 
+import matplotlib.patches as mpatches
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib_venn import venn2, venn2_circles
 
 ########################################################
 # DROID Dataset Constants (from DROID dataset analysis)

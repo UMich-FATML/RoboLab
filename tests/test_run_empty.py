@@ -10,10 +10,10 @@ verify a different task or robot setup.
 
 import torch
 
-from tests.conftest import CAMERAS_DISABLED
 from robolab.core.environments.factory import get_envs
 from robolab.core.environments.runtime import create_env, end_episode
 from robolab.registrations.droid.auto_env_registrations_jointpos import auto_register_droid_envs
+from tests.conftest import CAMERAS_DISABLED
 
 
 def _resolve_env_name(task_arg, env_name_arg):

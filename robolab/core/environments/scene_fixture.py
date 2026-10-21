@@ -31,6 +31,7 @@ import isaaclab.sim as sim_utils
 from isaaclab.assets import AssetBaseCfg
 from isaaclab.sim.utils import clone
 from isaaclab.utils import configclass
+
 try:
     from isaacsim.core.utils.stage import get_current_stage
 except ImportError:  # IsaacSim 6.x removed isaacsim.core.utils.stage

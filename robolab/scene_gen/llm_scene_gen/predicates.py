@@ -9,8 +9,8 @@ and physical solvers to create valid scene configurations.
 """
 
 from dataclasses import dataclass, field
-from typing import Literal, Optional, Union
 from enum import Enum
+from typing import Literal, Optional, Union
 
 
 class PredicateType(Enum):

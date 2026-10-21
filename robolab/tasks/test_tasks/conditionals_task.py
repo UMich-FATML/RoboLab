@@ -2,14 +2,16 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import os
-from isaaclab.utils import configclass
-from isaaclab.managers import TerminationTermCfg as DoneTerm
-import isaaclab.envs.mdp as mdp
 from dataclasses import dataclass
 
+import isaaclab.envs.mdp as mdp
+from isaaclab.managers import TerminationTermCfg as DoneTerm
+from isaaclab.utils import configclass
+
 from robolab.constants import SCENE_DIR
-from robolab.core.task.task import Task
 from robolab.core.scenes.utils import import_scene_and_contact_object_list
+from robolab.core.task.task import Task
+
 
 @configclass
 class Terminations:
