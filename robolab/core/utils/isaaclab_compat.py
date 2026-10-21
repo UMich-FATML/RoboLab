@@ -72,6 +72,18 @@ def quats_are_xyzw() -> bool:
     return major is not None and major >= 3
 
 
+@lru_cache(maxsize=1)
+def sim_cfg_has_render() -> bool:
+    """Return ``True`` when ``SimulationCfg`` carries a ``render`` (``RenderCfg``) field.
+
+    IsaacLab 3.0 removed ``SimulationCfg.render``; render settings moved to
+    per-camera renderer configs, so callers must write the carb settings
+    directly instead. Absent or unparsable versions default to the 2.x layout.
+    """
+    major = isaaclab_major_version()
+    return major is None or major < 3
+
+
 def as_torch(value):
     """Return an isaaclab data buffer as a torch tensor.
 

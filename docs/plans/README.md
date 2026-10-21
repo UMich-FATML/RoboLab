@@ -40,7 +40,7 @@ it.
    can only be fully verified on a cluster with an older driver, or on the
    `isaac60` stack. Note this in verification reports rather than skipping
    silently.
-4. **`slurm/` batch scripts are local-only.** The verification harness a
+4. **Slurm batch scripts are local-only.** The verification harness a
    cluster actually runs is not reviewable in-repo. If a second person starts
    running the suite on a different cluster, consider committing a
    cluster-generic template (without site names) here.

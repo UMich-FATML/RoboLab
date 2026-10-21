@@ -131,6 +131,9 @@ torchvision = { index = "pytorch-cu128" }
 testpaths = ["tests", "tests_nosim"]
 
 [tool.ruff]
+# Hook and docs run `uvx ruff`, which fetches the latest; this floor keeps isort
+# behaviour from regressing to an older ruff on PATH.
+required-version = ">=0.17"
 target-version = "py311"
 line-length = 120
 

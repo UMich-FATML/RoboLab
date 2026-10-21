@@ -17,9 +17,10 @@ from robolab.core.utils.isaaclab_compat import (
     convert_env_cfg_quats,
     convert_scene_state_quats,
     isaaclab_version,
-    quats_are_xyzw,
     quat_from_wxyz,
     quat_to_wxyz,
+    quats_are_xyzw,
+    sim_cfg_has_render,
 )
 
 
@@ -29,6 +30,16 @@ def test_version_probe_matches_installed_convention():
 
         pytest.skip("isaaclab not installed")
     assert quats_are_xyzw() == (int(isaaclab_version().split(".")[0]) >= 3)
+
+
+def test_sim_cfg_render_probe_matches_installed_stack():
+    # SimulationCfg.render exists on isaaclab 2.x and was removed in 3.0.
+    import pytest
+
+    if isaaclab_version() is None:
+        pytest.skip("isaaclab not installed")
+    sim_cfg = pytest.importorskip("isaaclab.sim").SimulationCfg
+    assert sim_cfg_has_render() == ("render" in sim_cfg.__dataclass_fields__)
 
 
 def test_quat_converters_follow_installed_convention():

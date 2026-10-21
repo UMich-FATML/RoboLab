@@ -25,8 +25,9 @@ MAX_AGENTS_LINES = 150
 
 LINK_RE = re.compile(r"\]\(([^)\s]+)\)")
 # Path-like backticked tokens in AGENTS.md: dirs/files under known roots.
+# slurm/ is deliberately absent: it is local-only (scripts/check_rules.py).
 AGENTS_PATH_RE = re.compile(
-    r"`((?:docs|robolab|policies|tests|scripts|examples|dashboard|analysis|slurm)"
+    r"`((?:docs|robolab|policies|tests_nosim|tests|scripts|examples|dashboard|analysis|assets|\.githooks)"
     r"(?:/[\w.\-]+)*/?)`"
 )
 

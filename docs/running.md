@@ -18,6 +18,19 @@ UV_PROJECT_ENVIRONMENT=.venv-60 uv venv --python 3.12 .venv-60 && \
 UV_PROJECT_ENVIRONMENT=.venv-60 uv sync --extra isaac60 --extra test
 ```
 
+## Before any GPU run
+
+The lints and the CPU-only tests need no GPU and no IsaacSim boot; run them
+first (the pre-commit hook runs the three lints):
+
+```bash
+uvx ruff check . && python3 scripts/check_docs.py && python3 scripts/check_rules.py
+UV_PROJECT_ENVIRONMENT=.venv-60 uv run --extra test pytest tests_nosim/
+```
+
+`tests_nosim/` still needs a stack venv (it reads USD through `pxr`), but runs
+on a login node in about 20 s.
+
 ## The suite
 
 ```bash
@@ -57,8 +70,9 @@ config conversion, the compat layer.
 
 ## Batch clusters (Slurm)
 
-- Batch scripts live under `slurm/` and are **local-only** (git-excluded,
-  [AGENTS.md](../AGENTS.md) rule 4). Keep them there; put reusable knowledge
+- Batch scripts live in a local slurm/ directory and are **local-only**
+  (git-excluded, [AGENTS.md](../AGENTS.md) rule 4, enforced by
+  `scripts/check_rules.py`). Keep them there; put reusable knowledge
   in this file instead.
 - The suite needs a real GPU allocation — run it as a batch job, not on the
   login node. Submit with the project's venv path pinned via

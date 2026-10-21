@@ -32,12 +32,15 @@ mutually exclusive IsaacSim stacks install via extras — see the README install
 section for the exact per-venv commands.
 
 ```bash
-uv run ruff check .                     # lint (isort-style import order; config in pyproject.toml)
+uvx ruff check .                        # lint (isort-style import order; config in pyproject.toml)
 uv run python scripts/check_docs.py     # docs/map lint: links resolve, no orphan docs
+uv run python scripts/check_rules.py    # hard rules 1 and 4 (version probes, slurm/ leaks)
+uv run --extra test pytest tests_nosim/ # CPU-only tests, no GPU (needs a stack venv for pxr)
 uv run --extra test pytest tests/       # full suite (GPU + IsaacSim)
 ```
 
-Enable the git hooks once per clone (docs lint + ruff run on commit):
+Enable the git hooks once per clone (all three lints run on commit; the git-lfs
+hooks live here too, since `core.hooksPath` bypasses `.git/hooks`):
 
 ```bash
 git config core.hooksPath .githooks
@@ -50,6 +53,9 @@ git config core.hooksPath .githooks
    installed isaaclab version or convert quaternion order inline — call the
    compat helpers at the boundary instead. The 2.x path of every helper is a
    no-op guard; keep it that way (non-regression on 2.x is a merge condition).
+   Need a new version-dependent branch? Add a capability helper there
+   (`sim_cfg_has_render()` is the pattern); `scripts/check_rules.py` flags
+   version probes elsewhere.
 2. **The quaternion contract is `(w, x, y, z)`** ([docs/frames.md](docs/frames.md)).
    Authored configs, recorded data, and public APIs speak wxyz; the installed
    stack's order is an implementation detail hidden by rule 1.
@@ -59,7 +65,8 @@ git config core.hooksPath .githooks
    `pyproject.toml` without checking that pin.
 4. **Batch scripts under the local-only slurm/ tree are never committed**
    (git-excluded; it does not exist in a fresh clone — never link to it or
-   backtick it as a path). Cluster submission knowledge belongs in
+   backtick it as a path; `scripts/check_rules.py` enforces both). Cluster
+   submission knowledge belongs in
    [docs/running.md](docs/running.md).
 
 ## When you finish

@@ -12,6 +12,9 @@
   chaining and rendered into both terminations and instructions. 20 generated
   smoke-test tasks under `robolab/tasks/generated/` (not part of the benchmark).
 - `tests_nosim/`: CPU-only tests for the generator (no IsaacSim boot).
+- `scripts/check_rules.py`: stdlib lint for AGENTS.md hard rules 1 (isaaclab
+  version probes only in the compat layer) and 4 (no committed or documented
+  slurm/ paths); runs in the pre-commit hook with the docs lint.
 
 ### Fixed
 
@@ -23,6 +26,12 @@
 
 ### Changed
 
+- The pre-commit hook falls back to `uvx ruff` and fails instead of skipping
+  when neither is available; the 31 existing import-order errors are fixed.
+  The git-lfs hooks are committed to `.githooks/`, since `core.hooksPath`
+  bypasses the ones `git lfs install` writes to `.git/hooks`.
+- `runtime._apply_render_settings` asks the compat layer
+  (`sim_cfg_has_render()`) instead of probing the isaaclab version itself.
 - `predicate_logic._read_local_mesh_points` delegates to the new pure-pxr
   `hull_check.read_prim_mesh_points` (vectorized, numerically identical), so the
   runtime predicates and the generator share one geometry definition.

@@ -1,10 +1,15 @@
 #!/bin/sh
-# RoboLab pre-commit: docs/map lint (enforced, stdlib-only) + ruff when on PATH.
+# RoboLab pre-commit: docs/map lint + hard-rule lint (stdlib-only) + ruff.
 # Enable once per clone:  git config core.hooksPath .githooks
 # Rules: docs/design.md core belief 4; commands: AGENTS.md → Toolchain.
 python3 scripts/check_docs.py || exit 1
+python3 scripts/check_rules.py || exit 1
 if command -v ruff >/dev/null 2>&1; then
-    ruff check . || exit 1
+    ruff check . || { echo "pre-commit: fix with 'ruff check . --fix'" >&2; exit 1; }
+elif command -v uvx >/dev/null 2>&1; then
+    uvx ruff check . || { echo "pre-commit: fix with 'uvx ruff check . --fix'" >&2; exit 1; }
 else
-    echo "pre-commit: ruff not on PATH — skipped (docs lint ran). Install with: uv tool install ruff" >&2
+    echo "pre-commit: neither ruff nor uvx on PATH — cannot lint imports." >&2
+    echo "  Install uv (https://docs.astral.sh/uv/) or: uv tool install ruff" >&2
+    exit 1
 fi

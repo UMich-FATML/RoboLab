@@ -30,7 +30,10 @@ future contributor would otherwise re-litigate or silently break. House rule
 
 4. **The map is checked, not trusted.** Docs rot; pointers lie. The docs lint
    (`scripts/check_docs.py`, run by the pre-commit hook) fails on dead links
-   and orphan docs so the index stays true mechanically.
+   and orphan docs so the index stays true mechanically. The same goes for
+   rules: a hard rule a grep can judge gets a check (`scripts/check_rules.py`)
+   whose message says how to fix it, and a lint nobody runs is not a lint —
+   the hook fails rather than skips when ruff is unavailable.
 
 ## Decision log
 

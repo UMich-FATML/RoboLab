@@ -25,7 +25,7 @@ from robolab.core.environments.config import parse_env_cfg
 from robolab.core.environments.env import RobolabEnv
 from robolab.core.events.utils import merge_events_cfg
 from robolab.core.task.task import resolve_instruction
-from robolab.core.utils.isaaclab_compat import convert_env_cfg_quats, isaaclab_major_version
+from robolab.core.utils.isaaclab_compat import convert_env_cfg_quats, sim_cfg_has_render
 
 logger = logging.getLogger(__name__)
 
@@ -66,7 +66,7 @@ def _apply_render_settings(env_cfg: ManagerBasedEnvCfg, renderer: str, rendering
             f"Unknown rendering_mode '{rendering_mode}'; expected one of {list(RENDERING_MODE_PRESETS)}."
         )
 
-    if (isaaclab_major_version() or 0) >= 3:
+    if not sim_cfg_has_render():
         settings = carb.settings.get_settings()
         if rendering_mode is not None:
             for key, value in RENDERING_MODE_PRESETS[rendering_mode].items():
